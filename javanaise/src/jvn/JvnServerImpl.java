@@ -84,7 +84,7 @@ public class JvnServerImpl
 		int id = 0;
 		try {
 			id = this.coordinateur.jvnGetObjectId();
-			o1 = new JvnObjectImpl(o, id, js);
+			o1 = new JvnObjectImpl(o, id, js, true);
 			//par défaut, demande le verrou en écriture à la création de l'objet
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -132,8 +132,7 @@ public class JvnServerImpl
 			o = this.correspondanceNomObjet.get(jon);
 		}
 		else if ( serveurObject != null ) {
-			o = serveurObject;
-			o.setServeur(this);
+			o = new JvnObjectImpl(serveurObject.jvnGetObjectState(), serveurObject.jvnGetObjectId(), this, false);
 			this.correspondanceNomObjet.put(jon, o);
 		}
 		return o;
