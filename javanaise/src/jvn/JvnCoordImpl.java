@@ -38,6 +38,7 @@ public class JvnCoordImpl
   * @throws JvnException
   **/
 	private JvnCoordImpl() throws Exception {
+		System.out.println("JvnCoordImpl.JvnCoordImpl()");
 		this.correspondanceIdServeur = new Hashtable<Integer, JvnRemoteServer>();
 		this.correspondanceNomObjet = new Hashtable<String, JvnObject>();
 		this.correspondanceObjetVerrou = new Hashtable<Integer, LockType>();
@@ -53,6 +54,7 @@ public class JvnCoordImpl
   public int jvnGetObjectId()
   throws java.rmi.RemoteException,jvn.JvnException {
     // to be completed 
+	System.out.println("JvnCoordImpl.jvnGetObjectId()");
     return compteur++;
   }
   
@@ -66,6 +68,7 @@ public class JvnCoordImpl
   **/
   public void jvnRegisterObject(String jon, JvnObject jo, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
+	  System.out.println("JvnCoordImpl.jvnRegisterObject()");
 	  this.correspondanceNomObjet.put(jon, jo);
 	  this.correspondanceIdServeur.put(jo.jvnGetObjectId(), js);
 	  this.correspondanceObjetVerrou.put(jo.jvnGetObjectId(), LockType.W);
@@ -80,6 +83,7 @@ public class JvnCoordImpl
   **/
   public JvnObject jvnLookupObject(String jon, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
+	  System.out.println("JvnCoordImpl.jvnLookupObject()");
     return this.correspondanceNomObjet.get(jon);
   }
   
@@ -92,6 +96,7 @@ public class JvnCoordImpl
   **/
    public Serializable jvnLockRead(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException{
+	   System.out.println("JvnCoordImpl.jvnLockRead()");
 	   // voir comment le client à le verrou et en fonction faire soit InvalidateReader soit InvalidateWriter
 	   if ( this.correspondanceObjetVerrou.get(joi) == LockType.R )
 		   return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
@@ -107,6 +112,7 @@ public class JvnCoordImpl
   **/
    public Serializable jvnLockWrite(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException {
+	   System.out.println("JvnCoordImpl.jvnLockWrite()");
 	   return this.correspondanceIdServeur.get(joi).jvnInvalidateWriter(joi);
    }
 
@@ -117,10 +123,12 @@ public class JvnCoordImpl
 	**/
     public void jvnTerminate(JvnRemoteServer js)
 	 throws java.rmi.RemoteException, JvnException {
+    	System.out.println("JvnCoordImpl.jvnTerminate()");
 	 // to be completed
     }
     
     public static void main(String[] args){
+    	System.out.println("JvnCoordImpl.main()");
     	JvnCoordImpl coordinateur;
 		try {
 			coordinateur = new JvnCoordImpl();

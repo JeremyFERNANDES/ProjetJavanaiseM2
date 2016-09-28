@@ -92,6 +92,8 @@ public class Irc {
   **/
 	public void actionPerformed (ActionEvent e) {
 	 try {
+		 
+		System.out.println("IRC.readListener_triggered()");
 		// lock the object in read mode
 		irc.sentence.jvnLockRead();
 		
@@ -125,15 +127,14 @@ public class Irc {
    **/
 	public void actionPerformed (ActionEvent e) {
 	   try {	
+		  System.out.println("IRC.writeListener_triggered()");
 		// get the value to be written from the buffer
-    String s = irc.data.getText();
+		  String s = irc.data.getText();
         	
-    // lock the object in write mode
+		  // lock the object in write mode
 		irc.sentence.jvnLockWrite();
 		
 		// invoke the method
-		System.out.println(irc);
-		System.out.println(irc.sentence);
 		((Sentence)(irc.sentence.jvnGetObjectState())).write(s);
 		
 		// unlock the object

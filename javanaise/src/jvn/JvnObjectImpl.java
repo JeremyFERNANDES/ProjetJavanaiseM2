@@ -26,6 +26,7 @@ public class JvnObjectImpl implements JvnObject {
 	public transient JvnLocalServer server;
 	
 	public JvnObjectImpl (Serializable o, int id, JvnLocalServer js) {
+		System.out.println("JvnObjectImpl.JvnObjectImpl()");
 		this.data = o;
 		this.id = id;
 		this.lock = lockStates.W;
@@ -33,6 +34,7 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public void jvnLockRead() throws JvnException {
+		System.out.println("JvnObjectImpl.jvnLockRead() : " + this.lock);
 		switch (this.lock)
 		{
 			case WC:
@@ -43,6 +45,7 @@ public class JvnObjectImpl implements JvnObject {
 			case R:
 				break;
 			case W:
+				//todo
 				break;
 			case NL:
 				this.data = this.server.jvnLockRead(this.id);
@@ -55,6 +58,7 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public void jvnLockWrite() throws JvnException {
+		System.out.println("JvnObjectImpl.jvnLockWrite() : " + this.lock);
 		switch (this.lock)
 		{
 			case WC:
@@ -81,7 +85,7 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public void jvnUnLock() throws JvnException {
-		this.lock = lockStates.NL;
+		System.out.println("JvnObjectImpl.jvnUnLock() : " + this.lock);
 		switch (this.lock)
 		{
 			case R:
@@ -99,14 +103,17 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public int jvnGetObjectId() throws JvnException {
+		System.out.println("JvnObjectImpl.jvnGetObjectId()");
 		return this.id;
 	}
 
 	public Serializable jvnGetObjectState() throws JvnException {
+		System.out.println("JvnObjectImpl.jvnGetObjectState()");
 		return this.data;
 	}
 
 	public void jvnInvalidateReader() throws JvnException {
+		System.out.println("JvnObjectImpl.jvnInvalidateReader()");
 		this.lock = lockStates.NL;
 		//todo : switch(R,W..)
 		// - si RC, WC, NL : on donne le verrou$
@@ -115,17 +122,20 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public Serializable jvnInvalidateWriter() throws JvnException {
+		System.out.println("JvnObjectImpl.jvnInvalidateWriter()");
 		// TODO Auto-generated method stub
 		return this.data;
 		//todo : pareil que invalidateReader
 	}
 
 	public Serializable jvnInvalidateWriterForReader() throws JvnException {
+		System.out.println("JvnObjectImpl.jvnInvalidateWriterForReader()");
 		// TODO Auto-generated method stub
 		return this.data;
 	}
 	
 	public void setServeur(JvnServerImpl s) {
+		System.out.println("JvnObjectImpl.setServeur()");
 		this.server = s;
 	}
 }

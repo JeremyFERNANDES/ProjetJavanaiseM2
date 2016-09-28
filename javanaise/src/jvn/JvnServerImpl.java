@@ -36,8 +36,9 @@ public class JvnServerImpl
   * Default constructor
   * @throws JvnException
   **/
-	private JvnServerImpl() throws Exception {
+	private JvnServerImpl() throws Exception {		
 		super();
+		System.out.println("JvnServerImpl.JvnServerImpl()");
 		this.cache = new Hashtable<Integer, JvnObject>();
 		this.correspondanceNomObjet = new Hashtable<String, JvnObject>();
 		Registry registry = LocateRegistry.getRegistry("localhost");
@@ -50,6 +51,7 @@ public class JvnServerImpl
     * @throws JvnException
     **/
 	public static JvnServerImpl jvnGetServer() {
+		System.out.println("JvnServerImpl.jvnGetServer()");
 		if (js == null){
 			try {
 				js = new JvnServerImpl();
@@ -66,6 +68,7 @@ public class JvnServerImpl
 	**/
 	public void jvnTerminate()
 	throws jvn.JvnException {
+		System.out.println("JvnServerImpl.jvnTerminate()");
     // to be completed 
 	} 
 	
@@ -76,6 +79,7 @@ public class JvnServerImpl
 	**/
 	public JvnObject jvnCreateObject(Serializable o)
 	throws jvn.JvnException {
+		System.out.println("JvnServerImpl.jvnCreateObject()");
 		JvnObject o1 = null;
 		int id = 0;
 		try {
@@ -97,6 +101,7 @@ public class JvnServerImpl
 	**/
 	public void jvnRegisterObject(String jon, JvnObject jo)
 	throws jvn.JvnException {
+		System.out.println("JvnServerImpl.jvnRegisterObject()");
 		this.correspondanceNomObjet.put(jon, jo);
 		try {
 			this.coordinateur.jvnRegisterObject(jon, jo, this);
@@ -114,6 +119,7 @@ public class JvnServerImpl
 	**/
 	public JvnObject jvnLookupObject(String jon)
 	throws jvn.JvnException {
+		System.out.println("JvnServerImpl.jvnLookupObject()");
 		JvnObject o = null;
 		JvnObject serveurObject = null;
 		try {
@@ -141,6 +147,7 @@ public class JvnServerImpl
 	**/
    public Serializable jvnLockRead(int joi)
 	 throws JvnException {
+	   System.out.println("JvnServerImpl.jvnLockRead()");
 	   Serializable s = null;
 		try {
 			s = this.coordinateur.jvnLockRead(joi, this.js);
@@ -159,6 +166,7 @@ public class JvnServerImpl
 	**/
    public Serializable jvnLockWrite(int joi)
 	 throws JvnException {
+	   System.out.println("JvnServerImpl.jvnLockWrite()");
 	    Serializable s = null;
 		try {
 			s = this.coordinateur.jvnLockWrite(joi, this.js);
@@ -179,6 +187,7 @@ public class JvnServerImpl
 	**/
   public void jvnInvalidateReader(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException {
+	  	System.out.println("JvnServerImpl.jvnInvalidateReader()");
 		// to be completed 
 	};
 	    
@@ -189,7 +198,8 @@ public class JvnServerImpl
 	* @throws java.rmi.RemoteException,JvnException
 	**/
   public Serializable jvnInvalidateWriter(int joi)
-	throws java.rmi.RemoteException,jvn.JvnException { 
+	throws java.rmi.RemoteException,jvn.JvnException {
+	  	System.out.println("JvnServerImpl.jvnInvalidateWriter()");
 		// to be completed 
 		return this.cache.get(joi).jvnInvalidateWriter();
 	};
@@ -201,7 +211,8 @@ public class JvnServerImpl
 	* @throws java.rmi.RemoteException,JvnException
 	**/
    public Serializable jvnInvalidateWriterForReader(int joi)
-	 throws java.rmi.RemoteException,jvn.JvnException { 
+	 throws java.rmi.RemoteException,jvn.JvnException {
+	   System.out.println("JvnServerImpl.jvnInvalidateWriter()");
 		// to be completed
 		return this.cache.get(joi).jvnInvalidateWriterForReader();
 	 };
