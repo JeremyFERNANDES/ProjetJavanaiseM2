@@ -25,11 +25,13 @@ public class JvnObjectImpl implements JvnObject {
 	//référence vers le serveur
 	public transient JvnLocalServer server;
 	
-	public JvnObjectImpl (Serializable o, int id, JvnLocalServer js) {
+	public JvnObjectImpl (Serializable o, int id, JvnLocalServer js, boolean write) {
 		System.out.println("JvnObjectImpl.JvnObjectImpl()");
 		this.data = o;
 		this.id = id;
-		this.lock = lockStates.W;
+		if (write)
+			this.lock = lockStates.W;
+		else this.lock = lockStates.NL;
 		this.server = js ;
 	}
 
