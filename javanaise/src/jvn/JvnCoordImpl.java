@@ -9,6 +9,7 @@
 package jvn;
 
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.io.Serializable;
 import java.rmi.registry.*;
@@ -25,9 +26,9 @@ public class JvnCoordImpl
 	// Compteur
 	private int compteur;
 	
-	private Hashtable <Integer, JvnRemoteServer> correspondanceIdServeur;
+	private Hashtable <Integer, ArrayList<JvnRemoteServer>> correspondanceIdServeur;
 	
-	private Hashtable <String, JvnObject> correspondanceNomObjet;
+	private Hashtable <String, Integer> correspondanceNomId;
 	
 	private Hashtable <Integer, JvnObject> correspondanceIdObjet;
 	
@@ -39,8 +40,8 @@ public class JvnCoordImpl
   **/
 	private JvnCoordImpl() throws Exception {
 		System.out.println("JvnCoordImpl.JvnCoordImpl()");
-		this.correspondanceIdServeur = new Hashtable<Integer, JvnRemoteServer>();
-		this.correspondanceNomObjet = new Hashtable<String, JvnObject>();
+		this.correspondanceIdServeur = new Hashtable<Integer, ArrayList<JvnRemoteServer>>();
+		this.correspondanceNomId = new Hashtable<String, Integer>();
 		this.correspondanceObjetVerrou = new Hashtable<Integer, LockType>();
 		this.correspondanceIdObjet = new Hashtable<Integer, JvnObject>();
 		this.compteur = 0;
@@ -69,10 +70,14 @@ public class JvnCoordImpl
   public void jvnRegisterObject(String jon, JvnObject jo, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
 	  System.out.println("JvnCoordImpl.jvnRegisterObject()");
-	  this.correspondanceNomObjet.put(jon, jo);
-	  this.correspondanceIdServeur.put(jo.jvnGetObjectId(), js);
-	  this.correspondanceObjetVerrou.put(jo.jvnGetObjectId(), LockType.W);
-	  this.correspondanceIdObjet.put(jo.jvnGetObjectId(), jo);
+	  int id = jo.jvnGetObjectId();
+	  this.correspondanceNomId.put(jon, id);
+	  
+	  this.correspondanceIdServeur.put(id, new ArrayList<JvnRemoteServer>());
+	  this.correspondanceIdServeur.get(id).add(js);
+	  
+	  this.correspondanceObjetVerrou.put(id, LockType.W);
+	  this.correspondanceIdObjet.put(id, jo);
   }
   
   /**
@@ -84,7 +89,10 @@ public class JvnCoordImpl
   public JvnObject jvnLookupObject(String jon, JvnRemoteServer js)
   throws java.rmi.RemoteException,jvn.JvnException{
 	  System.out.println("JvnCoordImpl.jvnLookupObject()");
-    return this.correspondanceNomObjet.get(jon);
+	  Integer id = this.correspondanceNomId.get(jon);
+	  if (id != null) 
+		  return this.correspondanceIdObjet.get(id);
+	  else return null;
   }
   
   /**
@@ -98,9 +106,22 @@ public class JvnCoordImpl
    throws java.rmi.RemoteException, JvnException{
 	   System.out.println("JvnCoordImpl.jvnLockRead()");
 	   // voir comment le client à le verrou et en fonction faire soit InvalidateReader soit InvalidateWriter
-	   if ( this.correspondanceObjetVerrou.get(joi) == LockType.R )
+	   if ( this.correspondanceObjetVerrou.get(joi) == LockType.R ) {
+		   this.correspondanceIdServeur.get(joi).add(js);
 		   return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
-	   else return this.correspondanceIdServeur.get(joi).jvnInvalidateWriterForReader(joi);
+	   }
+	   
+	   else {
+		   // MAJ DANS UNE SEUL FONCTION ?
+		   Serializable o = this.correspondanceIdServeur.get(joi).get(0).jvnInvalidateWriterForReader(joi);
+		   
+		   this.correspondanceIdObjet.put(joi, ((JvnObject) o));
+		   this.correspondanceIdServeur.get(joi).clear();
+		   this.correspondanceIdServeur.get(joi).add(js);
+		   
+		   this.correspondanceObjetVerrou.put(joi, LockType.R);
+		   return ((JvnObject) o).jvnGetObjectState();
+	   }
    }
 
   /**
@@ -113,8 +134,30 @@ public class JvnCoordImpl
    public Serializable jvnLockWrite(int joi, JvnRemoteServer js)
    throws java.rmi.RemoteException, JvnException {
 	   System.out.println("JvnCoordImpl.jvnLockWrite()");
-	   return this.correspondanceIdServeur.get(joi).jvnInvalidateWriter(joi);
-   }
+	   if ( this.correspondanceObjetVerrou.get(joi) == LockType.R ) {
+		   for (JvnRemoteServer s : this.correspondanceIdServeur.get(joi)) {
+			   s.jvnInvalidateReader(joi);
+		   }
+		   this.correspondanceObjetVerrou.put(joi, LockType.W);
+		   
+		   this.correspondanceIdServeur.get(joi).clear();
+		   this.correspondanceIdServeur.get(joi).add(js);
+		   
+		   return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
+	   }
+	   else {
+		   // MAJ DANS UNE SEUL FONCTION ?
+		   Serializable o = this.correspondanceIdServeur.get(joi).get(0).jvnInvalidateWriter(joi);
+		   
+		   this.correspondanceIdObjet.put(joi, ((JvnObject) o));
+		   
+		   this.correspondanceIdServeur.get(joi).clear();
+		   this.correspondanceIdServeur.get(joi).add(js);
+		   
+		   this.correspondanceObjetVerrou.put(joi, LockType.W);
+		   return ((JvnObject) o).jvnGetObjectState();
+	   }
+	}
 
 	/**
 	* A JVN server terminates

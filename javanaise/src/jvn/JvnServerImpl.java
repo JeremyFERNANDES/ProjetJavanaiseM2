@@ -26,7 +26,7 @@ public class JvnServerImpl
 	
 	private Hashtable<Integer, JvnObject> cache;
 	
-	private Hashtable<String, JvnObject> correspondanceNomObjet;
+	private Hashtable<String, Integer> correspondanceNomId;
 	
 	private JvnRemoteCoord coordinateur;
 	
@@ -40,7 +40,7 @@ public class JvnServerImpl
 		super();
 		System.out.println("JvnServerImpl.JvnServerImpl()");
 		this.cache = new Hashtable<Integer, JvnObject>();
-		this.correspondanceNomObjet = new Hashtable<String, JvnObject>();
+		this.correspondanceNomId = new Hashtable<String, Integer>();
 		Registry registry = LocateRegistry.getRegistry("localhost");
 		this.coordinateur = (JvnRemoteCoord) registry.lookup("coordinateur");
 	}
@@ -102,7 +102,7 @@ public class JvnServerImpl
 	public void jvnRegisterObject(String jon, JvnObject jo)
 	throws jvn.JvnException {
 		System.out.println("JvnServerImpl.jvnRegisterObject()");
-		this.correspondanceNomObjet.put(jon, jo);
+		this.correspondanceNomId.put(jon, jo.jvnGetObjectId());
 		try {
 			this.coordinateur.jvnRegisterObject(jon, jo, this);
 		} catch (Exception e) {
@@ -128,12 +128,13 @@ public class JvnServerImpl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (this.correspondanceNomObjet.get(jon) != null) {
-			o = this.correspondanceNomObjet.get(jon);
+		if (this.correspondanceNomId.get(jon) != null) {
+			o = this.cache.get(this.correspondanceNomId.get(jon));
 		}
 		else if ( serveurObject != null ) {
 			o = new JvnObjectImpl(serveurObject.jvnGetObjectState(), serveurObject.jvnGetObjectId(), this, false);
-			this.correspondanceNomObjet.put(jon, o);
+			this.correspondanceNomId.put(jon, o.jvnGetObjectId());
+			this.cache.put(o.jvnGetObjectId(), o);
 		}
 		return o;
 	}
@@ -187,7 +188,7 @@ public class JvnServerImpl
   public void jvnInvalidateReader(int joi)
 	throws java.rmi.RemoteException,jvn.JvnException {
 	  	System.out.println("JvnServerImpl.jvnInvalidateReader()");
-		// to be completed 
+	  	this.cache.get(joi).jvnInvalidateReader();
 	};
 	    
 	/**

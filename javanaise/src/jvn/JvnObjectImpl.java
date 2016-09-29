@@ -126,14 +126,16 @@ public class JvnObjectImpl implements JvnObject {
 	public Serializable jvnInvalidateWriter() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnInvalidateWriter()");
 		// TODO Auto-generated method stub
-		return this.data;
+		this.lock = lockStates.NL;
+		return this;
 		//todo : pareil que invalidateReader
 	}
 
 	public Serializable jvnInvalidateWriterForReader() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnInvalidateWriterForReader()");
 		// TODO Auto-generated method stub
-		return this.data;
+		this.lock = lockStates.NL;
+		return this;
 	}
 	
 	public void setServeur(JvnServerImpl s) {
