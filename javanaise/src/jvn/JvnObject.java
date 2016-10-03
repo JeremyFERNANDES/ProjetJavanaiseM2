@@ -75,8 +75,5 @@ public interface JvnObject extends Serializable {
 	* @throws JvnException
 	**/
    public Serializable jvnInvalidateWriterForReader()
-	 throws jvn.JvnException;
-   
-   public void setServeur(JvnServerImpl s);
-   
+	 throws jvn.JvnException;   
 }
