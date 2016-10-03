@@ -58,7 +58,7 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 		int id = 0;
 		try {
 			id = this.coordinateur.jvnGetObjectId();
-			o1 = new JvnObjectImpl(o, id, js, true);
+			o1 = new JvnObjectImpl(o, id, js);
 			synchronized(this) {
 				this.cache.put(id, o1);
 			}
@@ -94,7 +94,9 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 		if (this.correspondanceNomId.get(jon) != null) {
 			o = this.cache.get(this.correspondanceNomId.get(jon));
 		} else if (serveurObject != null) {
-			o = new JvnObjectImpl(serveurObject.jvnGetObjectState(), serveurObject.jvnGetObjectId(), this, false);
+			o = serveurObject;
+			o.setLockNL();
+			o.setServer(this);
 			synchronized(this) {
 				this.correspondanceNomId.put(jon, o.jvnGetObjectId());
 				this.cache.put(o.jvnGetObjectId(), o);
@@ -130,7 +132,6 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 		// TODO : to be completed
 		this.cache.get(joi).jvnInvalidateReader();
 	};
-
 
 	public Serializable jvnInvalidateWriter(int joi) throws java.rmi.RemoteException, jvn.JvnException {
 		System.out.println("JvnServerImpl.jvnInvalidateWriter()");

@@ -12,7 +12,7 @@ public class JvnObjectImpl implements JvnObject {
 	private int id;
 
 	// Verrou sur l'objet
-	private lockStates lock;
+	private transient lockStates lock;
 
 	// Référence vers l'objet applicatif
 	private Serializable data;
@@ -20,14 +20,11 @@ public class JvnObjectImpl implements JvnObject {
 	// Référence vers le serveur local
 	public transient JvnLocalServer server;
 
-	public JvnObjectImpl(Serializable o, int id, JvnLocalServer js, boolean write) {
+	public JvnObjectImpl(Serializable o, int id, JvnLocalServer js) {
 		System.out.println("JvnObjectImpl.JvnObjectImpl()");
 		this.data = o;
 		this.id = id;
-		if (write)
-			this.lock = lockStates.W;
-		else
-			this.lock = lockStates.NL;
+		this.lock = lockStates.W;
 		this.server = js;
 	}
 
@@ -225,5 +222,13 @@ public class JvnObjectImpl implements JvnObject {
 		}		
 		
 		return this;
+	}
+	
+	public void setLockNL() {
+		this.lock = lockStates.NL;
+	}
+
+	public void setServer(JvnServerImpl jvnServerImpl) {
+		this.server = jvnServerImpl;
 	}
 }
