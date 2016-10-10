@@ -8,9 +8,12 @@
 
 package irc;
 
-public class Sentence implements java.io.Serializable {
-	String 		data;
-  
+import annotation.Lock;
+import annotation.LockType;
+
+public class Sentence implements java.io.Serializable, SentenceInterface {
+	String data;
+	  
 	public Sentence() {
 		data = new String("");
 	}
@@ -18,8 +21,8 @@ public class Sentence implements java.io.Serializable {
 	public void write(String text) {
 		data = text;
 	}
-	public String read() {
-		return data;	
-	}
 	
+	public String read() {
+		return data;
+	}
 }

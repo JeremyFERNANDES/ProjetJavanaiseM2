@@ -28,11 +28,9 @@ public class JvnObjectImpl implements JvnObject {
 		this.server = js;
 	}
 
-	//TODO : synchro seulement sur la portion de code nécessaire
 	public synchronized void jvnLockRead() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnLockRead() : " + this.lock);
-		
-		// TODO : A completer
+
 		switch (this.lock) {
 		case WC:
 			this.lock = lockStates.RWC;
@@ -40,25 +38,19 @@ public class JvnObjectImpl implements JvnObject {
 		case RC:
 			this.lock = lockStates.R;
 			break;
-		case R:
-			//en théorie : cas d'erreur
-			break;
-		case W:
-			//en théorie : cas d'erreur
-			break;
 		case NL:
 			this.data = this.server.jvnLockRead(this.id);
 			this.lock = lockStates.R;
 			break;
 		default:
-			//en théorie : cas d'erreur
+			throw new JvnException("opération impossible");
 		}
 	}
 
-	//TODO : synchro seulement sur la portion de code nécessaire
+
 	public synchronized void jvnLockWrite() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnLockWrite() : " + this.lock);
-		// TODO : A completer
+
 		switch (this.lock) {
 		case WC:
 			this.lock = lockStates.W;
@@ -79,14 +71,13 @@ public class JvnObjectImpl implements JvnObject {
 			this.lock = lockStates.W;
 			break;
 		default:
-			
+			throw new JvnException("opération impossible");
 		}
 	}
-	
-	//TODO : synchro seulement sur la portion de code nécessaire
+
 	public synchronized void jvnUnLock() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnUnLock() : " + this.lock);
-		// TODO : A completer (notify)
+
 		switch (this.lock) {
 		case R:
 			this.lock = lockStates.RC;
@@ -98,7 +89,7 @@ public class JvnObjectImpl implements JvnObject {
 			this.lock = lockStates.NL;
 			break;
 		default:
-			//cas d'erreur
+			throw new JvnException("opération impossible");
 		}
 		notifyAll();
 	}
@@ -113,11 +104,9 @@ public class JvnObjectImpl implements JvnObject {
 		return this.data;
 	}
 
-	//todo : synchro seulement sur la portion de code nécessaire
 	public synchronized void jvnInvalidateReader() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnInvalidateReader()");
-		
-		//TODO : compléter wait
+
 		switch (this.lock) {
 		case R:
 			try {
@@ -125,10 +114,7 @@ public class JvnObjectImpl implements JvnObject {
 				this.lock = lockStates.NL;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}			
-			break;
-		case W:
-			//cas d'erreur
+			}
 			break;
 		case RC:
 			this.lock = lockStates.NL;
@@ -139,19 +125,14 @@ public class JvnObjectImpl implements JvnObject {
 		case RWC:
 			this.lock = lockStates.NL;
 			break;
-		case NL:
-			//cas d'erreur
-			break;
 		default:
-			//cas d'erreur
+			throw new JvnException("opération impossible");
 		}
 	}
 
-	//TODO : synchro seulement sur la portion de code nécessaire
 	public synchronized Serializable jvnInvalidateWriter() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnInvalidateWriter()");
-		
-		//TODO : compléter wait
+
 		switch (this.lock) {
 		case R:
 			try {
@@ -159,7 +140,7 @@ public class JvnObjectImpl implements JvnObject {
 				this.lock = lockStates.NL;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}			
+			}
 			break;
 		case W:
 			try {
@@ -178,25 +159,17 @@ public class JvnObjectImpl implements JvnObject {
 		case RWC:
 			this.lock = lockStates.NL;
 			break;
-		case NL:
-			//cas d'erreur
-			break;
 		default:
-			//cas d'erreur
-		}		
-		
+			throw new JvnException("opération impossible");
+		}
+
 		return this;
-		// TODO : pareil que invalidateReader
 	}
 
-	//TODO : synchro seulement sur la portion de code nécessaire
 	public synchronized Serializable jvnInvalidateWriterForReader() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnInvalidateWriterForReader()");
 
-		//TODO : compléter wait
 		switch (this.lock) {
-		case R:
-			//cas d'erreur
 		case W:
 			try {
 				this.wait();
@@ -214,16 +187,13 @@ public class JvnObjectImpl implements JvnObject {
 		case RWC:
 			this.lock = lockStates.NL;
 			break;
-		case NL:
-			//cas d'erreur
-			break;
 		default:
-			//cas d'erreur
-		}		
-		
+			throw new JvnException("opération impossible");
+		}
+
 		return this;
 	}
-	
+
 	public void setLockNL() {
 		this.lock = lockStates.NL;
 	}
