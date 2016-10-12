@@ -8,6 +8,7 @@
 package jvn;
 
 import java.io.*;
+import java.util.Date;
 
 /**
  * Interface of a JVN object. The serializable property is required in order to
@@ -77,4 +78,8 @@ public interface JvnObject extends Serializable {
 	public void setLockNL();
 
 	public void setServer(JvnServerImpl jvnServerImpl);
+	
+	public lockStates getVerrou();
+	
+	public Date getTimeUnlock();
 }

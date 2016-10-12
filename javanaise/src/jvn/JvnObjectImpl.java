@@ -1,15 +1,14 @@
 package jvn;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class JvnObjectImpl implements JvnObject {
-
-	private enum lockStates {
-		R, W, RC, WC, RWC, NL;
-	}
-
+	
 	// ID
 	private int id;
+	
+	private Date dateUnlock;
 
 	// Verrou sur l'objet
 	private transient lockStates lock;
@@ -28,9 +27,9 @@ public class JvnObjectImpl implements JvnObject {
 		this.server = js;
 	}
 
-	public synchronized void jvnLockRead() throws JvnException {
+	public void jvnLockRead() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnLockRead() : " + this.lock);
-
+		
 		switch (this.lock) {
 		case WC:
 			this.lock = lockStates.RWC;
@@ -48,7 +47,7 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 
-	public synchronized void jvnLockWrite() throws JvnException {
+	public void jvnLockWrite() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnLockWrite() : " + this.lock);
 
 		switch (this.lock) {
@@ -77,7 +76,7 @@ public class JvnObjectImpl implements JvnObject {
 
 	public synchronized void jvnUnLock() throws JvnException {
 		System.out.println("JvnObjectImpl.jvnUnLock() : " + this.lock);
-
+		this.dateUnlock = new Date();
 		switch (this.lock) {
 		case R:
 			this.lock = lockStates.RC;
@@ -87,6 +86,9 @@ public class JvnObjectImpl implements JvnObject {
 			break;
 		case NL:
 			this.lock = lockStates.NL;
+			break;
+		case RWC:
+			this.lock = lockStates.WC;
 			break;
 		default:
 			throw new JvnException("opération impossible");
@@ -200,5 +202,13 @@ public class JvnObjectImpl implements JvnObject {
 
 	public void setServer(JvnServerImpl jvnServerImpl) {
 		this.server = jvnServerImpl;
+	}
+	
+	public lockStates getVerrou() {
+		return this.lock;
+	}
+	
+	public Date getTimeUnlock() {
+		return this.dateUnlock;
 	}
 }

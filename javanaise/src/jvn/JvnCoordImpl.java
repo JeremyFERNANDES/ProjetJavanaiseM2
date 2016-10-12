@@ -12,11 +12,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.rmi.registry.*;
 
 public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord {
 	private enum LockType {
-		R, W
+		R, W, NL
 	}
 
 	// Compteur
@@ -70,17 +71,12 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 	
 	public Serializable jvnLockRead(int joi, JvnRemoteServer js) throws java.rmi.RemoteException, JvnException {
 		System.out.println("JvnCoordImpl.jvnLockRead()");
-		// voir comment le client à le verrou et en fonction faire soit
-		// InvalidateReader soit InvalidateWriter
 		if (this.correspondanceObjetVerrou.get(joi) == LockType.R) {
 			synchronized(this) {
 				this.correspondanceIdServeur.get(joi).add(js);
 			}
 			return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
-		}
-
-		else {
-			// MAJ DANS UNE SEUL FONCTION ?
+		} else if (this.correspondanceObjetVerrou.get(joi) == LockType.W) {
 			Serializable o = this.correspondanceIdServeur.get(joi).get(0).jvnInvalidateWriterForReader(joi);
 			
 			synchronized(this) {
@@ -91,6 +87,12 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 			}
 			// Fin de la MAJ
 			return ((JvnObject) o).jvnGetObjectState();
+		} else { // Cas NL
+			synchronized(this) {
+				this.correspondanceIdServeur.get(joi).add(js);
+			}
+			this.correspondanceObjetVerrou.put(joi, LockType.W);
+			return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
 		}
 	}
 
@@ -106,8 +108,7 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 			this.correspondanceIdServeur.get(joi).add(js);
 
 			return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
-		} else {
-			// MAJ DANS UNE SEUL FONCTION ?
+		} else if (this.correspondanceObjetVerrou.get(joi) == LockType.W) {
 			Serializable o = this.correspondanceIdServeur.get(joi).get(0).jvnInvalidateWriter(joi);
 
 			this.correspondanceIdObjet.put(joi, ((JvnObject) o));
@@ -118,6 +119,12 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 			
 			// Fin de la MAJ
 			return ((JvnObject) o).jvnGetObjectState();
+		} else { // cas NL
+			this.correspondanceObjetVerrou.put(joi, LockType.W);
+			this.correspondanceIdServeur.get(joi).clear();
+			this.correspondanceIdServeur.get(joi).add(js);
+
+			return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
 		}
 	}
 
@@ -140,6 +147,16 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 			System.out.println("Error on server :" + e);
 			e.printStackTrace();
 		}
+	}
+
+	public synchronized void jvnObjectDeleteToTheChache(JvnRemoteServer js, int joi) {
+		if (this.correspondanceObjetVerrou.get(joi) == LockType.R) {
+			this.correspondanceIdServeur.get(joi).remove(js);
+		} else {
+			this.correspondanceIdServeur.get(joi).clear();
+			this.correspondanceObjetVerrou.put(joi, LockType.NL);	
+		}
+		
 	}
 
 }

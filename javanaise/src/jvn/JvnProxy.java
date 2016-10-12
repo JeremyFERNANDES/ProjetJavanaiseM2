@@ -49,7 +49,6 @@ public class JvnProxy implements InvocationHandler {
 		try {		
 			
 			if(method.isAnnotationPresent(Lock.class)){
-				System.out.println("azdqssdsdsd");
 				Lock lock = method.getAnnotation(Lock.class);	
 				if(lock.type().toString().equals("read")) {
 					this.jo.jvnLockRead();
