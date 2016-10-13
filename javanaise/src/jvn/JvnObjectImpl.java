@@ -20,7 +20,7 @@ public class JvnObjectImpl implements JvnObject {
 	public transient JvnLocalServer server;
 
 	public JvnObjectImpl(Serializable o, int id, JvnLocalServer js) {
-		System.out.println("JvnObjectImpl.JvnObjectImpl()");
+		//System.out.println("JvnObjectImpl.JvnObjectImpl()");
 		this.data = o;
 		this.id = id;
 		this.lock = lockStates.W;
@@ -28,7 +28,7 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public void jvnLockRead() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnLockRead() : " + this.lock);
+		//System.out.println("JvnObjectImpl.jvnLockRead() : " + this.lock);
 		
 		switch (this.lock) {
 		case WC:
@@ -48,8 +48,7 @@ public class JvnObjectImpl implements JvnObject {
 
 
 	public void jvnLockWrite() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnLockWrite() : " + this.lock);
-
+		//System.out.println("JvnObjectImpl.jvnLockWrite() : " + this.lock);
 		switch (this.lock) {
 		case WC:
 			this.lock = lockStates.W;
@@ -75,7 +74,7 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public synchronized void jvnUnLock() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnUnLock() : " + this.lock);
+		//System.out.println("JvnObjectImpl.jvnUnLock() : " + this.lock);
 		this.dateUnlock = new Date();
 		switch (this.lock) {
 		case R:
@@ -97,17 +96,17 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public int jvnGetObjectId() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnGetObjectId()");
+		//System.out.println("JvnObjectImpl.jvnGetObjectId()");
 		return this.id;
 	}
 
 	public Serializable jvnGetObjectState() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnGetObjectState()");
+		//System.out.println("JvnObjectImpl.jvnGetObjectState()");
 		return this.data;
 	}
 
 	public synchronized void jvnInvalidateReader() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnInvalidateReader()");
+		//System.out.println("JvnObjectImpl.jvnInvalidateReader()");
 
 		switch (this.lock) {
 		case R:
@@ -133,8 +132,8 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public synchronized Serializable jvnInvalidateWriter() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnInvalidateWriter()");
-
+		//System.out.println("JvnObjectImpl.jvnInvalidateWriter()");
+		
 		switch (this.lock) {
 		case R:
 			try {
@@ -169,7 +168,7 @@ public class JvnObjectImpl implements JvnObject {
 	}
 
 	public synchronized Serializable jvnInvalidateWriterForReader() throws JvnException {
-		System.out.println("JvnObjectImpl.jvnInvalidateWriterForReader()");
+		//System.out.println("JvnObjectImpl.jvnInvalidateWriterForReader()");
 
 		switch (this.lock) {
 		case W:

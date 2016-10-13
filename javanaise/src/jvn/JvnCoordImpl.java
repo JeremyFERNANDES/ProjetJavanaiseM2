@@ -32,7 +32,7 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 	private Hashtable<Integer, LockType> correspondanceObjetVerrou;
 
 	private JvnCoordImpl() throws Exception {
-		System.out.println("JvnCoordImpl.JvnCoordImpl()");
+		//System.out.println("JvnCoordImpl.JvnCoordImpl()");
 		this.correspondanceIdServeur = new Hashtable<Integer, ArrayList<JvnRemoteServer>>();
 		this.correspondanceNomId = new Hashtable<String, Integer>();
 		this.correspondanceObjetVerrou = new Hashtable<Integer, LockType>();
@@ -42,13 +42,13 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 
 	public synchronized int jvnGetObjectId() throws java.rmi.RemoteException, jvn.JvnException {
 		// to be completed
-		System.out.println("JvnCoordImpl.jvnGetObjectId()");
+		//System.out.println("JvnCoordImpl.jvnGetObjectId()");
 		return compteur++;
 	}
 
 	public void jvnRegisterObject(String jon, JvnObject jo, JvnRemoteServer js)
 			throws java.rmi.RemoteException, jvn.JvnException {
-		System.out.println("JvnCoordImpl.jvnRegisterObject()");
+		//System.out.println("JvnCoordImpl.jvnRegisterObject()");
 		int id = jo.jvnGetObjectId();
 		
 		synchronized(this) {
@@ -61,7 +61,7 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 	}
 
 	public JvnObject jvnLookupObject(String jon, JvnRemoteServer js) throws java.rmi.RemoteException, jvn.JvnException {
-		System.out.println("JvnCoordImpl.jvnLookupObject()");
+		//System.out.println("JvnCoordImpl.jvnLookupObject()");
 		Integer id = this.correspondanceNomId.get(jon);
 		if (id != null)
 			return this.correspondanceIdObjet.get(id);
@@ -70,7 +70,7 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 	}
 	
 	public Serializable jvnLockRead(int joi, JvnRemoteServer js) throws java.rmi.RemoteException, JvnException {
-		System.out.println("JvnCoordImpl.jvnLockRead()");
+		//System.out.println("JvnCoordImpl.jvnLockRead()");
 		if (this.correspondanceObjetVerrou.get(joi) == LockType.R) {
 			synchronized(this) {
 				this.correspondanceIdServeur.get(joi).add(js);
@@ -90,14 +90,14 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 		} else { // Cas NL
 			synchronized(this) {
 				this.correspondanceIdServeur.get(joi).add(js);
+				this.correspondanceObjetVerrou.put(joi, LockType.W);
 			}
-			this.correspondanceObjetVerrou.put(joi, LockType.W);
 			return this.correspondanceIdObjet.get(joi).jvnGetObjectState();
 		}
 	}
 
 	public synchronized Serializable jvnLockWrite(int joi, JvnRemoteServer js) throws java.rmi.RemoteException, JvnException {
-		System.out.println("JvnCoordImpl.jvnLockWrite()");
+		//System.out.println("JvnCoordImpl.jvnLockWrite()");
 		if (this.correspondanceObjetVerrou.get(joi) == LockType.R) {
 			for (JvnRemoteServer s : this.correspondanceIdServeur.get(joi)) {
 				if (js.equals(s)) continue;
@@ -129,12 +129,12 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 	}
 
 	public void jvnTerminate(JvnRemoteServer js) throws java.rmi.RemoteException, JvnException {
-		System.out.println("JvnCoordImpl.jvnTerminate()");
+		//System.out.println("JvnCoordImpl.jvnTerminate()");
 		// TODO to be completed
 	}
 
 	public static void main(String[] args) {
-		System.out.println("JvnCoordImpl.main()");
+		//System.out.println("JvnCoordImpl.main()");
 		JvnCoordImpl coordinateur;
 		try {
 			coordinateur = new JvnCoordImpl();
@@ -142,7 +142,7 @@ public class JvnCoordImpl extends UnicastRemoteObject implements JvnRemoteCoord 
 			Registry r = LocateRegistry.createRegistry(1099);
 			r.rebind("coordinateur", coordinateur);
 
-			System.out.println("Server ready");
+			//System.out.println("Server ready");
 		} catch (Exception e) {
 			System.out.println("Error on server :" + e);
 			e.printStackTrace();

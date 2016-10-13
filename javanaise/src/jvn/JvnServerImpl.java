@@ -32,7 +32,7 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 
 	private JvnServerImpl() throws Exception {
 		super();
-		System.out.println("JvnServerImpl.JvnServerImpl()");
+		//System.out.println("JvnServerImpl.JvnServerImpl()");
 		this.cache = new Hashtable<Integer, JvnObject>();
 		this.correspondanceNomId = new Hashtable<String, Integer>();
 		Registry registry = LocateRegistry.getRegistry("localhost");
@@ -40,7 +40,7 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 	}
 
 	public static JvnServerImpl jvnGetServer() {
-		System.out.println("JvnServerImpl.jvnGetServer()");
+		//System.out.println("JvnServerImpl.jvnGetServer()");
 		if (js == null) {
 			try {
 				js = new JvnServerImpl();
@@ -52,12 +52,12 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 	}
 
 	public void jvnTerminate() throws jvn.JvnException {
-		System.out.println("JvnServerImpl.jvnTerminate()");
+		//System.out.println("JvnServerImpl.jvnTerminate()");
 		// to be completed
 	}
 
 	public JvnObject jvnCreateObject(Serializable o) throws jvn.JvnException {
-		System.out.println("JvnServerImpl.jvnCreateObject()");
+		//System.out.println("JvnServerImpl.jvnCreateObject()");
 		if (this.cache.size() == this.cacheMaxSize) {
 			suppressionElementCache();
 		}
@@ -76,7 +76,7 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 	}
 
 	public void jvnRegisterObject(String jon, JvnObject jo) throws jvn.JvnException {
-		System.out.println("JvnServerImpl.jvnRegisterObject()");
+		//System.out.println("JvnServerImpl.jvnRegisterObject()");
 		synchronized(this) {
 			this.correspondanceNomId.put(jon, jo.jvnGetObjectId());
 		}
@@ -89,7 +89,7 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 	}
 
 	public JvnObject jvnLookupObject(String jon) throws jvn.JvnException {
-		System.out.println("JvnServerImpl.jvnLookupObject()");
+		//System.out.println("JvnServerImpl.jvnLookupObject()");
 		// TODO : to be completed
 		if (this.cache.size() == this.cacheMaxSize) {
 			suppressionElementCache();
@@ -112,12 +112,13 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 				this.cache.put(o.jvnGetObjectId(), o);
 			}
 		}
+		//System.out.println(o.getVerrou());
 		afficheToiTchounibabe();
 		return o;
 	}
 
 	public Serializable jvnLockRead(int joi) throws JvnException {
-		System.out.println("JvnServerImpl.jvnLockRead()");
+		//System.out.println("JvnServerImpl.jvnLockRead()");
 		Serializable s = null;
 		try {
 			s = this.coordinateur.jvnLockRead(joi, this.js);
@@ -128,7 +129,7 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 	}
 
 	public Serializable jvnLockWrite(int joi) throws JvnException {
-		System.out.println("JvnServerImpl.jvnLockWrite()");
+		//System.out.println("JvnServerImpl.jvnLockWrite()");
 		Serializable s = null;
 		try {
 			s = this.coordinateur.jvnLockWrite(joi, this.js);
@@ -139,19 +140,19 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 	}
 
 	public void jvnInvalidateReader(int joi) throws java.rmi.RemoteException, jvn.JvnException {
-		System.out.println("JvnServerImpl.jvnInvalidateReader()");
+		//System.out.println("JvnServerImpl.jvnInvalidateReader()");
 		// TODO : to be completed
 		this.cache.get(joi).jvnInvalidateReader();
 	}
 
 	public Serializable jvnInvalidateWriter(int joi) throws java.rmi.RemoteException, jvn.JvnException {
-		System.out.println("JvnServerImpl.jvnInvalidateWriter()");
+		//System.out.println("JvnServerImpl.jvnInvalidateWriter()");
 		// TODO : to be completed
 		return this.cache.get(joi).jvnInvalidateWriter();
 	}
 
 	public Serializable jvnInvalidateWriterForReader(int joi) throws java.rmi.RemoteException, jvn.JvnException {
-		System.out.println("JvnServerImpl.jvnInvalidateWriter()");
+		//System.out.println("JvnServerImpl.jvnInvalidateWriter()");
 		// TODO : to be completed
 		return this.cache.get(joi).jvnInvalidateWriterForReader();
 	}
