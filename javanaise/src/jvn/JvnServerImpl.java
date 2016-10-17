@@ -168,6 +168,7 @@ public class JvnServerImpl extends UnicastRemoteObject implements JvnLocalServer
 		   Object cle = it.next();
 		   currentLock = this.cache.get(cle).getVerrou();
 		   toRemoveLock = idObjASupprimmer != -1 ? this.cache.get(idObjASupprimmer).getVerrou() : null;
+		   System.out.println(currentLock);
 		   
 		   if ( (currentLock == lockStates.NL || currentLock == lockStates.RC || currentLock == lockStates.WC) &&  idObjASupprimmer == -1 ){
 			   idObjASupprimmer = (Integer) cle;
