@@ -1,0 +1,16 @@
+﻿Procédure à suivre pour accéder à l'application :
+- Importer le projet sous Eclipse.
+- Lancer le coordinateur.
+- Lancer (2 fois) le chat IRC. 
+
+Le projet dispose également d'une classe JavanaiseTest pour tester la fonctionnalité supplémentaire décrite ci-dessous :
+
+----------------------------------------------------------------
+	     Gestion de la saturation du cache local
+----------------------------------------------------------------
+Nous avons fait en sorte que le cache soit limité à  3 éléments.
+Lorsque le serveur essaye de créer ou de récupérer un 4e objet, une fonction est appelée pour libérer une place dans le cache. Cette fonction :
+- parmi les objets en état NL, retire celui dont la date de dernière utilisation est la plus ancienne.
+- si aucun objet n'est en état NL, retire l'objet en état RC ou WC dont la date de dernière utilisation est la plus ancienne.
+- si tous les objets sont sous verrou actif, une exception est lancée.
+
