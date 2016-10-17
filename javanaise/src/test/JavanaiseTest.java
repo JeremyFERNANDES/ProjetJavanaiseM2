@@ -29,20 +29,20 @@ public class JavanaiseTest {
 			System.out.println(e.getMessage());
 		}
 	}
-
+	
 	@Test
 	public final void testSaturation2() {
 		try {
 			ArrayList<SentenceInterface> ar = new ArrayList<SentenceInterface>();
 			for(int i = 0; i <= 3; ++i) {
-				ar.add((SentenceInterface) JvnProxy.newInstance("tS2_"+i, Sentence.class));
+				ar.add((SentenceInterface) JvnProxy.newInstance("tS1_"+i, Sentence.class));
 				if(i == 0)
 					ar.get(0).read();
 				if(i == 1)
 					ar.get(1).write("text");
 			}
 			String obtainedOutput = JvnServerImpl.jvnGetServer().getHashmap().keySet().toString();
-			String expectedOutput = "[tS2_3, tS2_1, tS2_0]";
+			String expectedOutput = "[tS1_3, tS1_1, tS1_0]";
 			assertEquals(obtainedOutput, expectedOutput);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
